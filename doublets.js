@@ -1003,16 +1003,14 @@ const dictionary = [
   ];
 
 
-let targetWord = document.querySelector(".target-word-box").textContent;
 let gameDisplay = document.querySelector(".game-container");
 let result = document.createElement("div");
 
-
+let targetWord = "WARM";
 let wordInPlay = "COLD";
 const wordInPlayLetters = Array.from(wordInPlay);
-result.textContent = `${wordInPlayLetters}`;
-gameDisplay.appendChild(result);
 
+const alphabet = [...'ABCDEFGHIJKLMNOPQRSTUVWXYZ'];
 let steps = 0;
 const wordList = [];
 dictionary.forEach(word => {
@@ -1024,11 +1022,58 @@ dictionary.forEach(word => {
 });
 console.table(wordList);
 const wordLadder ={};
+let nthLetterOfWord = Math.random() * wordInPlay.length;
+let previousNthLetterOfWord = undefined;
+
+function solveWordLadder(...word)
+{
+    do {
+        do {
+            let letterSelection = alphabet.filter((letter) => {
+                if (letter !== word[nthLetterOfWord]){
+                    return letter;
+                }
+            })
+            const newWord = word.map((letter) => 
+            {
+                if (word.indexOf(letter) === nthLetterOfWord)
+                {
+                    return letter[Math.random() * letterSelection.length]
+                }
+                else return letter;
+            })
+            if (wordList.includes(newWord))
+            {
+                steps++;
+                previousNthLetterOfWord = nthLetterOfWord;
+                do {
+                    nthLetterOfWord = Math.random() * wordInPlay.length;
+                } while (previousNthLetterOfWord === nthLetterOfWord);
+                wordLadder.push(newWord);
+            }
+        } while (!(wordList.includes(word)));
+    } while (word !== targetWord);
+}
+
+function playGame(word)
+{
+    solveWordLadder(word);
+    result.textContent = wordLadder;
+    gameDisplay.appendChild(result);
+}
+
+const button = document.querySelector("#play");
+button.addEventListener("click", function()
+{
+    playGame("COLD");
+}
+)
 
 
+
+//playGame("COLD");
 
 /*
-
 
 DONE Pull Global Word List
 
@@ -1041,18 +1086,18 @@ DONE For each word on Global Word list
     If word length equals starting WORD length
         Add word to WORD LIST
 DONE Make empty array WORD LADDER
-Initialize CURRENT POSITION at random (e.g. first letter of word)
-Initialize LAST POSITION
-Do Until WORD === END WORD: 
-    Do Until WORD is on WORD LIST: 
-        Replace one letter at CURRENT POSITION with random different letter (random from LETTERS with starting letter removed)
-        IF (WORD is on WORD List) 
-            STEPS++
-            LAST POSITION = CURRENT POSITION
-            Set random CURRENT POSITION excluding LAST POSITION
-            Add WORD to WORD LADDER
-Display WORD LADDER
-Display STEPS
+DONE Initialize CURRENT POSITION at random (e.g. first letter of word)
+DONE Initialize LAST POSITION
+DONE  Do Until WORD === END WORD: 
+        Do Until WORD is on WORD LIST: 
+            Replace one letter at CURRENT POSITION with random different letter (random from LETTERS with starting letter removed)
+            IF (WORD is on WORD List) 
+                STEPS++
+                LAST POSITION = CURRENT POSITION
+                Set random CURRENT POSITION excluding LAST POSITION
+                Add WORD to WORD LADDER
+    Display WORD LADDER
+    Display STEPS
 */
 
 
